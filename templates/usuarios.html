@@ -11,6 +11,7 @@
       background-color: #f4f6f9;
       color: #333;
     }
+
     header {
       background-color: #14213d;
       color: white;
@@ -19,22 +20,27 @@
       justify-content: space-between;
       align-items: center;
     }
+
     header h1 {
       font-size: 20px;
       margin: 0;
     }
+    
     nav a {
       color: white;
       margin-left: 20px;
       text-decoration: none;
       font-weight: bold;
     }
+
     nav a:hover {
       text-decoration: underline;
     }
+
     .container {
       padding: 30px;
     }
+
     .card {
       background: white;
       padding: 20px;
@@ -42,39 +48,47 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       margin-bottom: 20px;
     }
+
     .card h2 {
       margin-top: 0;
       color: #14213d;
     }
+
     form {
       display: flex;
       flex-direction: column;
       gap: 10px;
       max-width: 400px;
     }
+
     input, select, button {
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
+
     button {
       background: #14213d;
       color: white;
       cursor: pointer;
     }
+
     button:hover {
       background: #1b2a52;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 15px;
     }
+
     th, td {
       border-bottom: 1px solid #ddd;
       padding: 8px;
       text-align: left;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -91,6 +105,7 @@
     tr:hover {
       background-color: #f1f1f1;
     }
+
     footer {
       text-align: center;
       padding: 15px;
@@ -100,39 +115,36 @@
       bottom: 0;
       width: 100%;
     }
-    /* Contenedor de los toasts */
-#toast-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
 
-/* Estilo base del toast */
-.toast {
-  padding: 14px 18px;
-  border-radius: 8px;
-  color: white;
-  min-width: 250px;
-  max-width: 300px;
-  font-weight: 500;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  animation: slideIn 0.4s ease, fadeOut 0.5s ease 4s forwards;
-  opacity: 0.95;
-}
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-/* Toast de éxito */
-.toast.success {
-  background-color: #28a745;
-}
+    .toast {
+      padding: 14px 18px;
+      border-radius: 8px;
+      color: white;
+      min-width: 250px;
+      max-width: 300px;
+      font-weight: 500;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      animation: slideIn 0.4s ease, fadeOut 0.5s ease 4s forwards;
+      opacity: 0.95;
+    }
 
-/* Toast de error */
-.toast.error {
-  background-color: #dc3545;
-}
+    .toast.success {
+      background-color: #28a745;
+    }
+
+    .toast.error {
+      background-color: #dc3545;
+    }
 
 /* Animaciones */
 @keyframes slideIn {
@@ -217,9 +229,7 @@
       <td>{{ user[2] }}</td>
       <td>
         <form action="{{ url_for('cambiar_contrasena', user_id=user[0]) }}" method="get" style="display:inline;">
-          <button type="submit" class="btn btn-warning btn-sm">
-            🔑 Cambiar contraseña
-          </button>
+          <button type="submit" class="btn btn-warning btn-sm">🔑 Cambiar contraseña</button>
         </form>
       </td>
       <td>
@@ -238,6 +248,7 @@
   <footer>
     © 2025 Bitácoras OMT Alico — Sistema de Registro Interno
   </footer>
+
 <script>
   // Quita los toasts después de 4.5 segundos
   setTimeout(() => {

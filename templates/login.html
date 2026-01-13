@@ -6,15 +6,16 @@
 
   <style>
     body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(rgba(20, 33, 61, 0.6), rgba(20, 33, 61, 0.6)), url('{{ url_for("static", filename="img/imagen1.png") }}') no-repeat center center fixed;
-    background-size: cover;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(rgba(20, 33, 61, 0.6), rgba(20, 33, 61, 0.6)), url('{{ url_for("static", filename="img/imagen1.png") }}') no-repeat center center fixed;
+      background-size: cover;
   }
+
     .login-form {
       background: white;
       padding: 30px;
@@ -24,17 +25,20 @@
       gap: 10px;
       width: 300px;
   }
+
     input, button {
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
   }
+
     button {
       background: #14213d;
       color: white;
       border: none;
       cursor: pointer;
   }
+
     footer {
       padding: 15px;
       color: rgb(163, 161, 161);
@@ -43,6 +47,7 @@
       font-size: small;
       text-align: center;
   }
+  
     .forgot-link {
       display: block;
       margin-top: 10px;
