@@ -1,0 +1,17 @@
+# Ignorar archivos grandes o innecesarios
+*.7z
+*.zip
+*.pkg
+*.db
+*.log
+
+# Carpetas que no deben subirse
+__pycache__/
+instance/
+env/
+venv/
+build/
+dist/
+
+# Configuración sensible
+.env

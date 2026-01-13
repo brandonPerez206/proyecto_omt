@@ -1,0 +1,9 @@
+body{margin:0;font-family:'Segoe UI',sans-serif;background:#f4f6f8;color:#333;}
+.sidebar{position:fixed;left:0;top:0;width:220px;height:100vh;background:#14213d;color:white;display:flex;flex-direction:column;padding:20px;}
+.sidebar a{color:#fff;text-decoration:none;margin:10px 0;}
+.sidebar a.logout{margin-top:auto;color:#e63946;}
+.main{margin-left:240px;padding:20px;}
+.login-page{display:flex;align-items:center;justify-content:center;height:100vh;background:#14213d;}
+.login-form{background:white;padding:30px;border-radius:8px;display:flex;flex-direction:column;gap:10px;}
+button{background:#14213d;color:white;border:none;padding:10px;cursor:pointer;}
+.flash{background:#ffcc00;padding:8px;border-radius:5px;}

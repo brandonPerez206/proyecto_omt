@@ -1,0 +1,197 @@
+
+{% block content %}
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+  }
+  header {
+    background-color: #14213d;
+    color: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 {
+    font-size: 20px;
+    margin: 0;
+  }
+  nav a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  nav a:hover {
+    text-decoration: underline;
+  }
+  .container {
+    padding: 30px;
+  }
+  .card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+  .card h2 {
+    margin-top: 0;
+    color: #14213d;
+  }
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  input, select, textarea, button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  button {
+    background: #14213d;
+    color: white;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #1b2a52;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  th, td {
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  th {
+    background: #14213d;
+    color: white;
+  }
+  tr:hover {
+    background-color: #f1f1f1;
+  }
+  footer {
+    text-align: center;
+    padding: 15px;
+    background: #14213d;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+  .exportar-container {
+  text-align: right;
+  margin-top: 25px; 
+}
+
+.btn-exportar {
+  background-color: #14213d;
+  color: white;
+  padding: 12px 20px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s, transform 0.1s ease-in-out;
+}
+
+.btn-exportar:hover {
+  background-color: #1b2a52;
+  transform: translateY(-2px);
+}
+</style>
+
+<header>
+  <h1>Historial de Bitácoras</h1>
+  <nav>
+    <a href="{{ url_for('dashboard') }}">Inicio</a>
+    <a href="{{ url_for('registros') }}">Registros</a>
+    <a href="{{ url_for('usuarios') }}">Usuarios</a>
+    <a href="{{ url_for('historial') }}">Historial</a>
+    <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>Filtrar Historial</h2>
+    <form method="GET" action="{{ url_for('historial') }}">
+      <input type="text" name="usuario" placeholder="Buscar por usuario" value="{{ request.args.get('usuario', '') }}">
+      <input type="date" name="fecha" value="{{ request.args.get('fecha', '') }}">
+      <button type="submit">Buscar</button>
+      <a href="{{ url_for('historial') }}" style="text-decoration:none;">
+        <button type="button">Limpiar</button>
+      </a>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Registros Guardados</h2>
+    {% if registros %}
+    <table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Usuario </th>
+      <th>Tipo</th>
+      <th>Descripción</th>
+      <th>Fecha</th>
+      <th>Hora</th>
+      {% if session.get('rol') == 'Administrador' %}
+      <th>Acciones</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in registros %}
+    <tr>
+      <td>{{ r[0] }}</td>
+      <td>{{ r[1] }}</td>
+      <td>{{ r[2] }}</td>
+      <td>{{ r[3] }}</td>
+      <td>{{ r[4] }}</td>
+      <td>{{ r[5] }}</td>
+      {% if session.get('rol') == 'Administrador' %}
+      <td>
+        <form method="POST" action="{{ url_for('eliminar_registro', id=r[0]) }}" style="display:inline;">
+          <button type="submit" onclick="return confirm('¿Seguro que deseas eliminar este registro?')" style="
+              background-color: #c82333;
+              color: white;
+              border: none;
+              padding: 6px 12px;
+              border-radius: 5px;
+              cursor: pointer;
+          ">
+            Eliminar
+          </button>
+        </form>
+      </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="exportar-container">
+  <a href="{{ url_for('exportar_bitacoras') }}" class="btn-exportar">📊 Exportar Bitácoras Completa</a>
+</div>
+    {% else %}
+    <p>No hay registros en el historial.</p>
+    {% endif %}
+  </div>
+</div>
+
+<footer>
+  © 2025 Bitácoras OMT Alico — Sistema de Registro Interno
+</footer>
+{% endblock %}

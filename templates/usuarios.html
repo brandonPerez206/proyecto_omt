@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Usuarios - Bitácoras OMT Alico</title>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+    }
+    header {
+      background-color: #14213d;
+      color: white;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      padding: 30px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      margin-top: 0;
+      color: #14213d;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+    }
+    input, select, button {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #14213d;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1b2a52;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #14213d;
+      color: white;
+      text-align: left;
+      padding: 10px;
+      width: 700PX;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #14213d;
+      color: white;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    /* Contenedor de los toasts */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Estilo base del toast */
+.toast {
+  padding: 14px 18px;
+  border-radius: 8px;
+  color: white;
+  min-width: 250px;
+  max-width: 300px;
+  font-weight: 500;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.4s ease, fadeOut 0.5s ease 4s forwards;
+  opacity: 0.95;
+}
+
+/* Toast de éxito */
+.toast.success {
+  background-color: #28a745;
+}
+
+/* Toast de error */
+.toast.error {
+  background-color: #dc3545;
+}
+
+/* Animaciones */
+@keyframes slideIn {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}
+
+
+  </style>
+</head>
+<body>
+  <header>
+<div id="toast-container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="toast {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+    <h1>Bitácoras OMT Alico</h1>
+    <nav>
+      <a href="/dashboard">Inicio</a>
+      <a href="/registros">Registros</a>
+      <a href="/usuarios">Usuarios</a>
+      <a href="/historial">Historial</a>
+      <a href="/logout">Cerrar sesión</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>Agregar Nuevo Usuario</h2>
+      <form method="POST" action="/usuarios">
+        <label>Nombre de usuario:</label>
+        <input type="text" name="usuario" required>
+
+        <label>Contraseña:</label>
+        <input type="password" name="password" required>
+
+        <label>Rol:</label>
+        <select name="rol">
+          <option value="OMT">OMT</option>
+          <option value="Administrador">Administrador</option>
+        </select>
+
+        <button type="submit">Crear Usuario</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Lista de Usuarios Registrados</h2>
+      <table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Usuario</th>
+      <th>Rol</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in usuarios %}
+    <tr>
+      <td>{{ user[0] }}</td>
+      <td>{{ user[1] }}</td>
+      <td>{{ user[2] }}</td>
+      <td>
+        <form action="{{ url_for('cambiar_contrasena', user_id=user[0]) }}" method="get" style="display:inline;">
+          <button type="submit" class="btn btn-warning btn-sm">
+            🔑 Cambiar contraseña
+          </button>
+        </form>
+      </td>
+      <td>
+      <form method="POST" action="/eliminar_usuario/{{ user[0] }}" style="display:inline;">
+        <button type="submit">Eliminar</button>
+      </form>
+    </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+    </div>
+  </div>
+
+  <footer>
+    © 2025 Bitácoras OMT Alico — Sistema de Registro Interno
+  </footer>
+<script>
+  // Quita los toasts después de 4.5 segundos
+  setTimeout(() => {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+  }, 4500);
+</script>
+
+</body>
+</html>

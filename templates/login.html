@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+      <title>Iniciar Sesión</title>
+
+  <style>
+    body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(rgba(20, 33, 61, 0.6), rgba(20, 33, 61, 0.6)), url('{{ url_for("static", filename="img/imagen1.png") }}') no-repeat center center fixed;
+    background-size: cover;
+  }
+    .login-form {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 300px;
+  }
+    input, button {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+  }
+    button {
+      background: #14213d;
+      color: white;
+      border: none;
+      cursor: pointer;
+  }
+    footer {
+      padding: 15px;
+      color: rgb(163, 161, 161);
+      bottom: 0;
+      width: 90%;
+      font-size: small;
+      text-align: center;
+  }
+    .forgot-link {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #14213d;
+      text-decoration: none;
+      transition: 0.3s;
+      text-align: center;
+  }
+
+    .forgot-link:hover {
+      color: #1b2a52;
+      text-decoration: underline;
+  }
+
+    .flash {
+      color: red;
+      margin: 10px 0;
+  }
+  
+  </style>
+</head>
+
+<body>
+
+  <form method="POST" class="login-form">
+    <h2>Iniciar sesión</h2>
+    <input type="text" name="usuario" placeholder="Usuario" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    <button type="submit">Entrar</button>
+    <div style="text-align: center; margin-top: 15px;">
+        <a href="{{ url_for('solicitud_recuperacion') }}" 
+            class="btn btn-secondary" 
+            style="background-color: #1a1f36; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+              ¿Olvidaste tu contraseña?
+        </a>
+    </div>
+
+<footer>
+    © 2025 Bitácoras OMT Alico — Sistema de Registro Interno
+</footer>
+
+  </form>
+  
+</body>
+</html>

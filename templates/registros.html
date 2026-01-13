@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registros - Bitácoras OMT Alico</title>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+    }
+    header {
+      background-color: #14213d;
+      color: white;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      padding: 30px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      margin-top: 0;
+      color: #14213d;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    input, select, textarea, button {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+  width: fit-content;
+  align-self: flex-end;
+  background-color: #14213d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #1b2a52;
+}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #14213d;
+      color: white;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    footer {
+      text-align: center;
+      padding: 8px;
+      background: #14213d;
+      color: white;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Bitácoras OMT Alico</h1>
+    <h2>Bienvenido, {{ usuario }}</h2>
+    <p>Rol: {{ rol }}</p>
+    <nav>
+      <a href="/dashboard">Inicio</a>
+      <a href="/registros">Registros</a>
+      <a href="/usuarios">Usuarios</a>
+      <a href="/historial">Historial</a>
+      <a href="/logout">Cerrar sesión</a>
+    </nav>
+  </header>
+
+  <div class="card">
+  <h2>Registrar nueva novedad</h2>
+  <form method="POST" action="{{ url_for('registros') }}">
+    <label for="tipo">Tipo de evento:</label>
+    <select id="tipo" name="tipo" required onchange="mostrarSubmenu()">
+      <option value="">Seleccione una opción</option>
+      <option value="Apertura de puertas">Apertura de puertas</option>
+      <option value="Ingreso/Salida">Ingreso/Salida</option>
+      <option value="Accidente">Accidente</option>
+      <option value="Novedad general">Novedad general</option>
+    </select>
+
+    <div id="submenu" style="display:none;">
+      <label for="subcategoria">Ubicación:</label>
+      <select id="subcategoria" name="subcategoria">
+        <option value="">Seleccione ubicación</option>
+        <option value="Oficinas">Oficinas</option>
+        <option value="Bodegas">Bodegas</option>
+        <option value="Punto de venta">Punto de venta</option>
+      </select>
+    </div>
+
+    <label for="descripcion">Descripción:</label>
+    <textarea name="descripcion" id="descripcion" rows="4" required placeholder="Escriba los detalles de la novedad..."></textarea>
+
+    <button type="submit">Guardar Registro</button>
+  </form>
+</div>
+
+<script>
+  function mostrarSubmenu() {
+    const tipo = document.getElementById('tipo').value;
+    const submenu = document.getElementById('submenu');
+    if (tipo === 'Apertura de puertas') {
+      submenu.style.display = 'block';
+    } else {
+      submenu.style.display = 'none';
+      document.getElementById('subcategoria').value = '';
+    }
+  }
+</script>
+
+
+    <div class="card">
+      <h2>Historial de Registros</h2>
+      <table>
+  <tr>
+    <th>Fecha</th>
+    <th>Hora</th>
+    <th>Usuario</th>
+    <th>Tipo</th>
+    <th>Descripción</th>
+  </tr>
+  {% for r in registros %}
+  <tr>
+    <td>{{ r[0] }}</td>
+    <td>{{ r[1] }}</td>
+    <td>{{ r[2] }}</td>
+    <td>{{ r[3] }}</td>
+    <td>{{ r[4] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+    </div>
+  </div>
+
+
+
+  <footer>
+    © 2025 Bitácoras OMT Alico — Sistema de Registro Interno
+  </footer>
+</body>
+</html>
