@@ -1,8 +1,8 @@
+from flask import current_app
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import check_password_hash
 from flask_mail import Message
 import sqlite3
-from app import mail
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -55,7 +55,7 @@ def solicitud_recuperacion():
         👤 Nombre del trabajador: {nombre}
         📝 Motivo: {motivo}
         """
-        mail.send(msg)
+        current_app.extensions['mail'].send(msg)
         flash('Tu solicitud fue enviada correctamente.', 'success')
         return redirect(url_for('auth.login'))
 
