@@ -101,7 +101,7 @@
             <button type="submit">Enviar solicitud</button>
         </form>
 
-        <a href="{{ url_for('login') }}">Volver al inicio de sesión</a>
+        <a href="{{ url_for('auth.login') }}">Volver al inicio de sesión</a>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}

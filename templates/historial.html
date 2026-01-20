@@ -131,22 +131,22 @@
 <header>
   <h1>Historial de Bitácoras</h1>
   <nav>
-    <a href="{{ url_for('dashboard') }}">Inicio</a>
-    <a href="{{ url_for('registros') }}">Registros</a>
-    <a href="{{ url_for('usuarios') }}">Usuarios</a>
-    <a href="{{ url_for('historial') }}">Historial</a>
-    <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+    <a href="{{ url_for('dashboard.dashboard') }}">Inicio</a>
+    <a href="{{ url_for('registros.registros') }}">Registros</a>
+    <a href="{{ url_for('usuarios.usuarios') }}">Usuarios</a>
+    <a href="{{ url_for('historial.historial') }}">Historial</a>
+    <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
   </nav>
 </header>
 
 <div class="container">
   <div class="card">
     <h2>Filtrar Historial</h2>
-    <form method="GET" action="{{ url_for('historial') }}">
+    <form method="GET" action="{{ url_for('historial.historial') }}">
       <input type="text" name="usuario" placeholder="Buscar por usuario" value="{{ request.args.get('usuario', '') }}">
       <input type="date" name="fecha" value="{{ request.args.get('fecha', '') }}">
       <button type="submit">Buscar</button>
-      <a href="{{ url_for('historial') }}" style="text-decoration:none;">
+      <a href="{{ url_for('historial.historial') }}" style="text-decoration:none;">
         <button type="button">Limpiar</button>
       </a>
     </form>
@@ -180,7 +180,7 @@
       <td>{{ r[5] }}</td>
       {% if session.get('rol') == 'Administrador' %}
       <td>
-        <form method="POST" action="{{ url_for('eliminar_registro', id=r[0]) }}" style="display:inline;">
+        <form method="POST" action="{{ url_for('registros.eliminar_registro', id=r[0]) }}" style="display:inline;">
           <button type="submit" onclick="return confirm('¿Seguro que deseas eliminar este registro?')" style="
               background-color: #c82333;
               color: white;
@@ -200,7 +200,7 @@
 </table>
 
 <div class="exportar-container">
-  <a href="{{ url_for('exportar_bitacoras') }}" class="btn-exportar">📊 Exportar Bitácoras Completa</a>
+  <a href="{{ url_for('historial.exportar_bitacoras') }}" class="btn-exportar">📊 Exportar Bitácoras Completa</a>
 </div>
     {% else %}
     <p>No hay registros en el historial.</p>

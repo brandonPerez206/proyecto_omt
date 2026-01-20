@@ -86,7 +86,7 @@
             <input type="password" name="confirmar_pass" placeholder="Confirmar contraseña" required>
             <button type="submit">Actualizar</button>
         </form>
-        <a href="{{ url_for('usuarios') }}">← Volver a usuarios</a>       
+        <a href="{{ url_for('usuarios.usuarios') }}">← Volver a usuarios</a>       
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}

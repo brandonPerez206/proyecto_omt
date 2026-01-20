@@ -125,7 +125,7 @@
 
   <div class="card">
   <h2>Registrar nueva novedad</h2>
-  <form method="POST" action="{{ url_for('registros') }}">
+  <form method="POST" action="{{ url_for('registros.registros') }}">
     <label for="tipo">Tipo de evento:</label>
     <select id="tipo" name="tipo" required onchange="mostrarSubmenu()">
       <option value="">Seleccione una opción</option>

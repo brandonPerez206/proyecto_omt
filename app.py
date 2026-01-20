@@ -4,51 +4,10 @@ from datetime import datetime
 from flask import send_file
 import sqlite3, os
 import pandas as pd
-
+from routes.setup_templates import ensure_templates_and_static
 
 app = Flask(__name__)
 app.secret_key = "admin123"
-
-
-
-@app.route('/cambiar_contrasena/<int:user_id>', methods=['GET', 'POST'])
-def cambiar_contrasena(user_id):
-    # Solo el administrador puede acceder
-    if 'usuario' not in session or session['rol'] != 'Administrador':
-        return redirect(url_for('dashboard'))
-
-    conn = sqlite3.connect('bitacoras.db')
-    c = conn.cursor()
-
-    # Obtener usuario por ID
-    c.execute("SELECT id, usuario FROM usuarios WHERE id = ?", (user_id,))
-    user = c.fetchone()
-
-    if not user:
-        conn.close()
-        flash("❌ Usuario no encontrado.", "danger")
-        return redirect(url_for('usuarios'))
-
-    if request.method == 'POST':
-        nueva_pass = request.form.get('nueva_pass')
-        confirmar_pass = request.form.get('confirmar_pass')
-
-        if not nueva_pass or not confirmar_pass:
-            flash("⚠️ Debes completar ambos campos.", "warning")
-        elif nueva_pass != confirmar_pass:
-            flash("⚠️ Las contraseñas no coinciden.", "danger")
-        else:
-            hashed_pass = generate_password_hash(nueva_pass)
-            c.execute("UPDATE usuarios SET password = ? WHERE id = ?", (hashed_pass, user_id))
-            conn.commit()
-            flash(f"✅ Contraseña actualizada para {user[1]}.", "success")
-            conn.close()
-            return redirect(url_for('usuarios'))
-
-    conn.close()
-    return render_template('cambiar_contrasena.html', user=user)
-
-
 
 from flask_mail import Message
 from flask_mail import Mail
@@ -61,8 +20,10 @@ app.config['MAIL_PASSWORD'] = 'jlfimkkjnyalercq'
 
 mail = Mail(app)
 
+#RUTA SOLICITUD DE RECUPERACION
 @app.route('/solicitud_recuperacion', methods=['GET', 'POST'])
 def solicitud_recuperacion():
+
     if request.method == 'POST':
         nombre = request.form.get('nombre')
         motivo = request.form.get('motivo')
@@ -72,7 +33,7 @@ def solicitud_recuperacion():
 
         # Crear mensaje
         msg = Message  (
-            subject="🔐 Solicitud de Restablecimiento de Contraseña",
+            subject=" Solicitud de Restablecimiento de Contraseña",
             sender=app.config['MAIL_USERNAME'],
             recipients=[destino]
         )
@@ -84,7 +45,7 @@ def solicitud_recuperacion():
         📝 Motivo: {motivo}
         """
         mail.send(msg)
-        flash('📩 Tu solicitud fue enviada correctamente. Pronto recibirás asistencia.', 'success')
+        flash(' Tu solicitud fue enviada correctamente. Pronto recibirás asistencia.', 'success')
         return redirect(url_for('login'))
 
     return render_template('solicitud_recuperacion.html')
@@ -116,11 +77,52 @@ def init_db():
 init_db()
 
 # --- Rutas principales ---
+
+# RUTA CAMBIO DE CONTRASEÑA
+@app.route('/cambiar_contrasena/<int:user_id>', methods=['GET', 'POST'])
+def cambiar_contrasena(user_id):
+    
+    # Solo el administrador puede acceder
+    if 'usuario' not in session or session['rol'] != 'Administrador':
+        return redirect(url_for('dashboard'))
+
+    conn = sqlite3.connect('bitacoras.db')
+    c = conn.cursor()
+
+    # Obtener usuario por ID
+    c.execute("SELECT id, usuario FROM usuarios WHERE id = ?", (user_id,))
+    user = c.fetchone()
+
+    if not user:
+        conn.close()
+        flash(" Usuario no encontrado.", "danger")
+        return redirect(url_for('usuarios'))
+
+    if request.method == 'POST':
+        nueva_pass = request.form.get('nueva_pass')
+        confirmar_pass = request.form.get('confirmar_pass')
+
+        if not nueva_pass or not confirmar_pass:
+            flash(" Debes completar ambos campos.", "warning")
+        elif nueva_pass != confirmar_pass:
+            flash(" Las contraseñas no coinciden.", "danger")
+        else:
+            hashed_pass = generate_password_hash(nueva_pass)
+            c.execute("UPDATE usuarios SET password = ? WHERE id = ?", (hashed_pass, user_id))
+            conn.commit()
+            flash(f" Contraseña actualizada para {user[1]}.", "success")
+            conn.close()
+            return redirect(url_for('usuarios'))
+
+    conn.close()
+    return render_template('cambiar_contrasena.html', user=user)
+
+#RUTA INICIAL
 @app.route('/', methods=['GET', 'POST'])
 def home():
     return redirect(url_for('login'))
 
-
+#RUTA INICIO DE SESION
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -136,20 +138,20 @@ def login():
         if user and check_password_hash(user[2], password):
             session['usuario'] = user[1]
             session['rol'] = user[3]
-            flash(f"👋 Bienvenido {user[1]}", "success")
+            flash(f" Bienvenido {user[1]}", "success")
             return redirect(url_for('dashboard'))
         else:
-            flash("❌ Usuario o contraseña incorrectos.", "danger")
+            flash(" Usuario o contraseña incorrectos.", "danger")
 
     return render_template('login.html')
 
-
-
+#RUTA CERRAR SESION
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
 
+#RUTA PESTAÑA1
 @app.route('/dashboard')
 def dashboard():
     if 'usuario' not in session:
@@ -167,6 +169,7 @@ def dashboard():
     return render_template('dashboard.html', ultimos=ultimos, usuario=session['usuario'], rol=session['rol'])
 from datetime import datetime
 
+#RUTA REALIZAR REGISTROS
 @app.route('/registros', methods=['GET', 'POST'])
 def registros():
     if 'usuario' not in session:
@@ -192,9 +195,46 @@ def registros():
 
     return render_template('registros.html', registros=lista_registros, usuario=session['usuario'], rol=session['rol'])
 
+def init_registros():
+    conn = sqlite3.connect('bitacoras.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS registros (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    usuario TEXT NOT NULL,
+                    tipo TEXT NOT NULL,
+                    descripcion TEXT NOT NULL,
+                    fecha TEXT NOT NULL,
+                    hora TEXT NOT NULL
+                )''')
+    conn.commit()
+    conn.close()
+
+init_registros()
+
+init_db()
+
+#RUTA ELIMINAR REGISTROS
+@app.route('/eliminar_registro/<int:id>', methods=['POST'])
+def eliminar_registro(id):
+    # Validar sesión activa
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
     
+    # Solo administradores pueden eliminar
+    if session.get('rol') != 'Administrador':
+        flash('No tienes permisos para eliminar registros.', 'danger')
+        return redirect(url_for('historial'))
 
+    conn = sqlite3.connect('bitacoras.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM registros WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
 
+    flash('Registro eliminado correctamente.', 'success')
+    return redirect(url_for('historial'))
+
+#RUTA CREAR USUARIOS
 @app.route('/usuarios', methods=['GET', 'POST'])
 def usuarios():
     # Solo los administradores pueden acceder
@@ -216,14 +256,14 @@ def usuarios():
 
         if existe:
             # Mensaje de advertencia si ya existe
-            flash(f"⚠️ El usuario '{usuario}' ya existe. Intente con otro nombre.", "error")
+            flash(f" El usuario '{usuario}' ya existe. Intente con otro nombre.", "error")
         else:
             # Crear usuario nuevo
             hashed_pass = generate_password_hash(password)
             c.execute("INSERT INTO usuarios (usuario, password, rol) VALUES (?, ?, ?)",
                       (usuario, password, rol))
             conn.commit()
-            flash(f"✅ Usuario '{usuario}' creado exitosamente.", "success")
+            flash(f" Usuario '{usuario}' creado exitosamente.", "success")
         if 'usuario' not in session or session['rol'] != 'Administrador':
             return redirect(url_for('dashboard'))
 
@@ -235,50 +275,7 @@ def usuarios():
 
     return render_template('usuarios.html', usuarios=usuarios)
 
-    # Mostrar lista de usuarios
-    c.execute("SELECT id, usuario, rol FROM usuarios")
-    lista_usuarios = c.fetchall()
-    conn.close()
-    return render_template('usuarios.html', usuarios=lista_usuarios)
-
-def init_registros():
-    conn = sqlite3.connect('bitacoras.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS registros (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    usuario TEXT NOT NULL,
-                    tipo TEXT NOT NULL,
-                    descripcion TEXT NOT NULL,
-                    fecha TEXT NOT NULL,
-                    hora TEXT NOT NULL
-                )''')
-    conn.commit()
-    conn.close()
-
-init_registros()
-
-init_db()
-
-@app.route('/eliminar_registro/<int:id>', methods=['POST'])
-def eliminar_registro(id):
-    # Validar sesión activa
-    if 'usuario' not in session:
-        return redirect(url_for('login'))
-    
-    # Solo administradores pueden eliminar
-    if session.get('rol') != 'Administrador':
-        flash('No tienes permisos para eliminar registros.', 'danger')
-        return redirect(url_for('historial'))
-
-    conn = sqlite3.connect('bitacoras.db')
-    c = conn.cursor()
-    c.execute("DELETE FROM registros WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
-
-    flash('Registro eliminado correctamente.', 'success')
-    return redirect(url_for('historial'))
-
+#RUTA ELIMINAR USUARIO
 @app.route('/eliminar_usuario/<int:id>', methods=['POST'])
 def eliminar_usuario(id):
     conn = sqlite3.connect('bitacoras.db')
@@ -288,6 +285,7 @@ def eliminar_usuario(id):
     conn.close()
     return redirect(url_for('usuarios'))
 
+#RUTA HISTORIAL DE REGISTROS
 @app.route('/historial')
 def historial():
     if 'usuario' not in session:
@@ -317,6 +315,7 @@ def historial():
 
     return render_template('historial.html', registros=registros)
 
+#RUTA EXPORTAR EN EXCEL
 @app.route('/exportar_bitacoras')
 def exportar_bitacoras():
     # Conexión a la base de datos
@@ -333,167 +332,9 @@ def exportar_bitacoras():
     # Enviar archivo al navegador para descarga
     return send_file(file_path, as_attachment=True)
 
-# --- Plantillas embebidas ---
-@app.context_processor
-def inject_templates():
-    if not os.path.exists("templates"):
-        os.makedirs("templates")
-        # base.html
-        with open("templates/base.html", "w", encoding="utf-8") as f:
-            f.write("""<!DOCTYPE html>
-<html lang='es'>
-<head>
-  <meta charset='UTF-8'>
-  <title>Bitácoras OMT Alico</title>
-  <link rel='stylesheet' href='{{ url_for("static", filename="style.css") }}'>
-</head>
-<body>
-  <div class='sidebar'>
-    <h2>Bitácoras OMT Alico</h2>
-    <a href='{{ url_for("dashboard") }}'>Inicio</a>
-    <a href='{{ url_for("registros") }}'>Registros</a>
-    <a href='{{ url_for("usuarios") }}'>Usuarios</a>
-    <a href='{{ url_for("logout") }}' class='logout'>Cerrar sesión</a>
-  </div>
-  <div class='main'>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class='flash'>{{ messages[0] }}</div>
-      {% endif %}
-    {% endwith %}
-    {% block content %}{% endblock %}
-  </div>
-</body>
-</html>""")
-        # login.html
-        with open("templates/login.html", "w", encoding="utf-8") as f:
-            f.write("""<!DOCTYPE html>
-<html lang='es'>
-<head>
-  <meta charset='UTF-8'>
-  <title>Iniciar Sesión</title>
-  <link rel='stylesheet' href='{{ url_for("static", filename="style.css") }}'>
-</head>
-<body class='login-page'>
-  <form method='POST' class='login-form'>
-    <h2>Iniciar sesión</h2>
-    <input type='text' name='usuario' placeholder='Usuario' required>
-    <input type='password' name='password' placeholder='Contraseña' required>
-    <button type='submit'>Entrar</button>
-  </form>
-</body>
-</html>""")
-        # dashboard.html
-        with open("templates/dashboard.html", "w", encoding="utf-8") as f:
-            f.write("""{% extends 'base.html' %}
-{% block content %}
-<h1>Bienvenido, {{ usuario }}</h1>
-<p>Selecciona una opción del menú lateral para continuar.</p>
-{% endblock %}""")
-        # registros.html
-        with open("templates/registros.html", "w", encoding="utf-8") as f:
-            f.write("""{% extends 'base.html' %}
-{% block content %}
-<h1>Registros</h1>
-<form method='POST' class='registro-form'>
-  <select name='tipo' required>
-    <option value=''>Seleccionar tipo</option>
-    <option>Novedad</option>
-    <option>Ingreso</option>
-    <option>Salida</option>
-    <option>Accidente</option>
-  </select>
-  <textarea name='descripcion' placeholder='Descripción...' required></textarea>
-  <button type='submit'>Guardar</button>
-</form>
-<table>
-  <tr><th>Tipo</th><th>Descripción</th><th>Autor</th><th>Fecha</th><th>Hora</th></tr>
-  {% for r in registros %}
-  <tr><td>{{r[1]}}</td><td>{{r[2]}}</td><td>{{r[3]}}</td><td>{{r[4]}}</td><td>{{r[5]}}</td></tr>
-  {% endfor %}
-</table>
-{% endblock %}""")
-        # usuarios.html
-        with open("templates/usuarios.html", "w", encoding="utf-8") as f:
-            f.write("""{% extends 'base.html' %}
-{% block content %}
-<h1>Usuarios</h1>
-<form method='POST'>
-  <input type='text' name='nombre' placeholder='Nombre completo' required>
-  <input type='text' name='usuario' placeholder='Usuario' required>
-  <input type='password' name='password' placeholder='Contraseña' required>
-  <button type='submit'>Crear usuario</button>
-</form>
-<table>
-  <tr><th>ID</th><th>Nombre</th><th>Usuario</th></tr>
-  {% for u in usuarios %}
-  <tr><td>{{u[0]}}</td><td>{{u[1]}}</td><td>{{u[2]}}</td></tr>
-  {% endfor %}
-</table>
-{% endblock %}""")
-    return {}
-
-# --- CSS ---
-if not os.path.exists("static"):
-    os.makedirs("static")
-    with open("static/style.css", "w", encoding="utf-8") as f:
-        f.write("""body{margin:0;font-family:'Segoe UI',sans-serif;background:#f4f6f8;color:#333;}
-.sidebar{position:fixed;left:0;top:0;width:220px;height:100vh;background:#14213d;color:white;display:flex;flex-direction:column;padding:20px;}
-.sidebar a{color:#fff;text-decoration:none;margin:10px 0;}
-.sidebar a.logout{margin-top:auto;color:#e63946;}
-.main{margin-left:240px;padding:20px;}
-.login-page{display:flex;align-items:center;justify-content:center;height:100vh;background:#14213d;}
-.login-form{background:white;padding:30px;border-radius:8px;display:flex;flex-direction:column;gap:10px;}
-button{background:#14213d;color:white;border:none;padding:10px;cursor:pointer;}
-.flash{background:#ffcc00;padding:8px;border-radius:5px;}""")
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
-
-import sqlite3
-from flask import Flask, render_template, request, redirect, url_for
-
-app = Flask(__name__)
-
-# Crear base de datos si no existe
-def init_db():
-    conn = sqlite3.connect('bitacoras.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS usuarios (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    usuario TEXT UNIQUE NOT NULL,
-                    password TEXT NOT NULL,
-                    rol TEXT NOT NULL
-                )''')
-    # Usuario admin por defecto
-    c.execute("INSERT OR IGNORE INTO usuarios (usuario, password, rol) VALUES (?, ?, ?)",
-              ("admin", "admin", "Administrador"))
-    conn.commit()
-    conn.close()
-
-init_db()
-
-import sqlite3
-from flask import Flask, render_template, request, redirect, url_for
-
-app = Flask(__name__)
-
-# Crear base de datos si no existe
-def init_db():
-    conn = sqlite3.connect('bitacoras.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS usuarios (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    usuario TEXT UNIQUE NOT NULL,
-                    password TEXT NOT NULL,
-                    rol TEXT NOT NULL
-                )''')
-    # Usuario admin por defecto
-    c.execute("INSERT OR IGNORE INTO usuarios (usuario, password, rol) VALUES (?, ?, ?)",
-              ("admin", "admin", "Administrador"))
-    conn.commit()
-    conn.close()
-
 import pandas as pd
 from flask import send_file
 
+if __name__ == '__main__':
+    ensure_templates_and_static()
+    app.run(host='0.0.0.0', port=5000, debug=True)
