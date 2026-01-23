@@ -9,7 +9,7 @@ c = conn.cursor()
 c.execute("SELECT id, password FROM usuarios")
 usuarios = c.fetchall()
 
-# Hashear cada contraseña (solo si no está ya hasheada)
+# Hashear cada contraseña 
 for u in usuarios:
     user_id, password = u
     if not password.startswith('pbkdf2:sha256:'):  # evita volver a hashear
